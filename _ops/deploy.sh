@@ -109,7 +109,9 @@ fail() { log "doğrulama: HATA — $*"; echo "$remote_sha" >> "$OPS/bad_shas"; s
 [ -f "$rel/public/.htaccess" ] || fail ".htaccess yok"
 [ -f "$rel/public/sitemap.xml" ] || fail "sitemap.xml yok"
 [ -f "$rel/public/404.html" ] || fail "404.html yok"
-grep -q "$remote_sha" "$rel/public/version.txt" 2>/dev/null || true
+rid=$(tr -dc '0-9a-f' < "$rel/_ops/release-id" 2>/dev/null)
+[ ${#rid} -ge 8 ] || fail "_ops/release-id yok"
+grep -q "^$rid" "$rel/public/version.txt" 2>/dev/null || fail "version.txt yayın kimliğiyle uyuşmuyor"
 nfiles=$(find "$rel/public" -type f | wc -l)
 [ "$nfiles" -ge 100 ] || fail "dosya sayısı çok az ($nfiles)"
 if [ -f "$rel/_ops/SHA256SUMS" ] && command -v sha256sum >/dev/null 2>&1; then
@@ -158,7 +160,7 @@ if [ -f "$urls" ]; then
   done < "$urls"
 fi
 live=$(curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$SITE_URL/version.txt" 2>/dev/null | head -1)
-case "$live" in *"$remote_sha"*) : ;; *) bad=$((bad+1)); log "test: HATA version.txt canlıda '$live'" ;; esac
+case "$live" in "$rid"*) : ;; *) bad=$((bad+1)); log "test: HATA version.txt canlıda '$live' (beklenen $rid)" ;; esac
 
 if [ "$bad" -gt 0 ]; then
   log "test: $bad/$checked hata — GERİ DÖNÜLÜYOR"
