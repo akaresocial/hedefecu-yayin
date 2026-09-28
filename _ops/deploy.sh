@@ -6,18 +6,19 @@
 # test başarısızsa yedeğe geri dön.
 #
 # Hiçbir şifre/anahtar kullanmaz (depo herkese açık; içinde yalnız derlenmiş site vardır).
-# Korunan yollar (asla silinmez): /.well-known/ /eskisite/ /public_ftp/ /cgi-bin/ /wp-content/uploads/ /.user.ini /php.ini
+# Korunan yollar (asla taşınmaz/silinmez): /.well-known/ /eskisite/ /public_ftp/ /cgi-bin/ /wp-content/uploads/ /.user.ini /php.ini
+# Kurulum rsync KULLANMAZ (sunucuda yok): eski girdiler anlık yedeğe taşınır, yenileri içeri taşınır (aynı dosya sistemi → rename).
 #
 # Güvenlik kapısı: depodaki _ops/enabled dosyası "1" değilse yalnız yedek + kontrol yapılır, kurulum yapılmaz.
 set -u
 umask 022
 
-REPO="akaresocial/hedefecu-yayin"
+REPO="${REPO:-akaresocial/hedefecu-yayin}"
 BRANCH="main"
-SITE_URL="https://hedefecu.com"
-WEBROOT="$HOME/public_html"
-OPS="$HOME/hedefecu-ops"
-BACKUPS="$HOME/yedekler"
+SITE_URL="${SITE_URL:-https://hedefecu.com}"
+WEBROOT="${WEBROOT:-$HOME/public_html}"
+OPS="${OPS:-$HOME/hedefecu-ops}"
+BACKUPS="${BACKUPS:-$HOME/yedekler}"
 KEEP=3
 
 mkdir -p "$OPS/releases" "$OPS/snapshots" "$BACKUPS"
@@ -56,7 +57,7 @@ fi
 if [ ! -f "$BACKUPS/.wp-ok" ] && [ -f "$WEBROOT/wp-config.php" ]; then
   stamp=$(date '+%Y%m%d-%H%M%S')
   log "yedek: public_html arşivleniyor → $BACKUPS/wp-public_html-$stamp.tar.gz"
-  if tar -czf "$BACKUPS/wp-public_html-$stamp.tar.gz" -C "$HOME" public_html; then
+  if tar -czf "$BACKUPS/wp-public_html-$stamp.tar.gz" -C "$(dirname "$WEBROOT")" "$(basename "$WEBROOT")"; then
     wpc="$WEBROOT/wp-config.php"
     getv() { sed -n "s/^[[:space:]]*define([[:space:]]*['\"]$1['\"][[:space:]]*,[[:space:]]*['\"]\(.*\)['\"][[:space:]]*);.*/\1/p" "$wpc" | head -1; }
     DBN=$(getv DB_NAME); DBU=$(getv DB_USER); DBP=$(getv DB_PASSWORD); DBH=$(getv DB_HOST)
@@ -77,8 +78,8 @@ if [ ! -f "$BACKUPS/.wp-ok" ] && [ -f "$WEBROOT/wp-config.php" ]; then
 fi
 
 # ---------------------------------------------------------------- uzak sürüm
-remote_sha=""
-if command -v git >/dev/null 2>&1; then
+remote_sha="${TEST_SHA:-}"
+if [ -z "$remote_sha" ] && command -v git >/dev/null 2>&1; then
   remote_sha=$(git ls-remote "https://github.com/$REPO.git" "refs/heads/$BRANCH" 2>/dev/null | cut -f1)
 fi
 if [ -z "$remote_sha" ]; then
@@ -95,6 +96,9 @@ if grep -qx "$remote_sha" "$OPS/bad_shas" 2>/dev/null; then exit 0; fi
 
 log "yeni sürüm: $remote_sha (canlı: ${current_sha:-yok})"
 rel="$OPS/releases/$remote_sha"
+if [ ! -d "$rel/public" ] && [ -n "${TEST_RELEASE_DIR:-}" ]; then
+  cp -a "$TEST_RELEASE_DIR" "$rel"
+fi
 if [ ! -d "$rel/public" ]; then
   rm -rf "$rel.tmp" && mkdir -p "$rel.tmp"
   if ! curl -fsSL --max-time 180 "https://codeload.github.com/$REPO/tar.gz/$remote_sha" | tar -xz -C "$rel.tmp" --strip-components=1; then
@@ -130,18 +134,48 @@ if [ "$(tr -dc '0-9' < "$rel/_ops/enabled" 2>/dev/null)" != "1" ]; then
   exit 0
 fi
 
-# ---------------------------------------------------------------- kurulum
-EXCLUDES=(--exclude=/.well-known/ --exclude=/eskisite/ --exclude=/public_ftp/ --exclude=/cgi-bin/ --exclude=/wp-content/uploads/ --exclude=/.user.ini --exclude=/php.ini)
-snap="$OPS/snapshots/$(date '+%Y%m%d-%H%M%S')"
-cp -al "$WEBROOT" "$snap" 2>/dev/null || cp -a "$WEBROOT" "$snap" || { log "anlık yedek: HATA"; status "snapshot-failed" "$remote_sha"; exit 1; }
-log "anlık yedek: $snap"
+# ---------------------------------------------------------------- kurulum (rsync yok → yer değiştirme; saniyenin altında)
+# Korunan girdiler public_html'de yerinde kalır; wp-content içinde yalnız uploads korunur (eski /wardofit/ görselleri).
+PRESERVE=" .well-known eskisite public_ftp cgi-bin .user.ini php.ini wp-content "
+is_preserved() { case "$PRESERVE" in *" $1 "*) return 0 ;; esac; return 1; }
 
-if command -v rsync >/dev/null 2>&1; then
-  rsync -a --delete-delay --delay-updates "${EXCLUDES[@]}" "$rel/public/" "$WEBROOT/" || { log "rsync: HATA — geri dönülüyor"; rsync -a --delete "${EXCLUDES[@]}" "$snap/" "$WEBROOT/"; echo "$remote_sha" >> "$OPS/bad_shas"; status "rolled-back" "$remote_sha" "rsync"; exit 1; }
-else
-  log "rsync yok — kurulum yapılamaz"; status "no-rsync" "$remote_sha"; exit 1
+stage="$OPS/stage-$rid"
+rm -rf "$stage" && mkdir -p "$stage"
+cp -a "$rel/public/." "$stage/" || { log "hazırlık: HATA"; status "stage-failed" "$remote_sha"; exit 1; }
+snap="$OPS/snapshots/$(date '+%Y%m%d-%H%M%S')"
+mkdir -p "$snap/_wpc" && : > "$snap/.moved-out" && : > "$snap/.moved-in" && : > "$snap/.wpc-moved-out"
+
+rollback() {
+  local fail_dir="$OPS/failed-$(date '+%Y%m%d-%H%M%S')"; mkdir -p "$fail_dir"
+  while IFS= read -r e; do [ -n "$e" ] && { [ -e "$WEBROOT/$e" ] || [ -L "$WEBROOT/$e" ]; } && mv "$WEBROOT/$e" "$fail_dir/$e"; done < "$snap/.moved-in"
+  while IFS= read -r e; do [ -n "$e" ] && { [ -e "$snap/$e" ] || [ -L "$snap/$e" ]; } && mv "$snap/$e" "$WEBROOT/$e"; done < "$snap/.moved-out"
+  while IFS= read -r c; do [ -n "$c" ] && [ -e "$snap/_wpc/$c" ] && mv "$snap/_wpc/$c" "$WEBROOT/wp-content/$c"; done < "$snap/.wpc-moved-out"
+  log "geri dönüş: eski dosyalar yerine kondu; başarısız sürüm → $fail_dir"
+}
+
+# 1) eski girdileri anlık yedeğe taşı (korunanlar hariç)
+for p in "$WEBROOT"/* "$WEBROOT"/.[!.]* "$WEBROOT"/..?*; do
+  { [ -e "$p" ] || [ -L "$p" ]; } || continue
+  e=${p##*/}
+  is_preserved "$e" && continue
+  mv "$p" "$snap/$e" && echo "$e" >> "$snap/.moved-out" || { log "taşıma: HATA ($e)"; rollback; status "rolled-back" "$remote_sha" "move-out"; exit 1; }
+done
+if [ -d "$WEBROOT/wp-content" ]; then
+  for p in "$WEBROOT"/wp-content/* "$WEBROOT"/wp-content/.[!.]*; do
+    { [ -e "$p" ] || [ -L "$p" ]; } || continue
+    c=${p##*/}; [ "$c" = "uploads" ] && continue
+    mv "$p" "$snap/_wpc/$c" && echo "$c" >> "$snap/.wpc-moved-out"
+  done
 fi
-log "kuruldu: $remote_sha ($nfiles dosya)"
+# 2) yeni girdileri içeri al
+for p in "$stage"/* "$stage"/.[!.]*; do
+  { [ -e "$p" ] || [ -L "$p" ]; } || continue
+  e=${p##*/}
+  if is_preserved "$e"; then log "uyarı: yayında korunan ad ($e) — atlandı"; continue; fi
+  mv "$p" "$WEBROOT/$e" && echo "$e" >> "$snap/.moved-in" || { log "taşıma: HATA ($e)"; rollback; status "rolled-back" "$remote_sha" "move-in"; exit 1; }
+done
+rm -rf "$stage"
+log "kuruldu: $remote_sha / $rid ($nfiles dosya; anlık yedek $snap)"
 
 # ---------------------------------------------------------------- canlı test
 sleep 3
@@ -164,10 +198,9 @@ case "$live" in "$rid"*) : ;; *) bad=$((bad+1)); log "test: HATA version.txt can
 
 if [ "$bad" -gt 0 ]; then
   log "test: $bad/$checked hata — GERİ DÖNÜLÜYOR"
-  rsync -a --delete "${EXCLUDES[@]}" "$snap/" "$WEBROOT/"
+  rollback
   echo "$remote_sha" >> "$OPS/bad_shas"
   status "rolled-back" "$remote_sha" "$bad hata"
-  log "geri dönüş: tamam ($snap)"
   exit 1
 fi
 
@@ -178,4 +211,5 @@ log "test: $checked/$checked geçti — CANLI"
 # ---------------------------------------------------------------- temizlik (son $KEEP sürüm ve anlık yedek; WordPress tam yedeği kalıcı)
 ls -1dt "$OPS"/releases/*/ 2>/dev/null | tail -n +$((KEEP+1)) | xargs -r rm -rf
 ls -1dt "$OPS"/snapshots/*/ 2>/dev/null | tail -n +$((KEEP+1)) | xargs -r rm -rf
+ls -1dt "$OPS"/failed-*/ 2>/dev/null | tail -n +3 | xargs -r rm -rf
 exit 0
