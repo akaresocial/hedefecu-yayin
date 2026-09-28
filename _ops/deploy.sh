@@ -1,5 +1,6 @@
 #!/bin/bash
-# hedefecu.com — sunucu tarafı otomatik yayın (Alastyr cPanel, cron ile 2 dakikada bir).
+# hedefecu.com — sunucu tarafı otomatik yayın (Alastyr cPanel, cron ile 15 dakikada bir; anlık yayın için aynı adımların PHP
+# karşılığı ops/tetik/index.php — ikisi aynı kilidi ve durum dosyalarını kullanır, birlikte değişir).
 #
 # Akış: açık yayın deposundaki (akaresocial/hedefecu-yayin) main dalının son commit'ini kontrol et →
 # yeni sürüm varsa indir, doğrula → public_html'in anlık yedeğini al → yer değiştirerek kur → canlı siteyi test et →
@@ -125,9 +126,14 @@ rid=$(tr -dc '0-9a-f' < "$rel/_ops/release-id" 2>/dev/null)
 grep -q "^$rid" "$rel/public/version.txt" 2>/dev/null || fail "version.txt yayın kimliğiyle uyuşmuyor"
 nfiles=$(find "$rel/public" -type f | wc -l)
 [ "$nfiles" -ge 100 ] || fail "dosya sayısı çok az ($nfiles)"
-bad_exec=$(find "$rel/public" -type f \( -iname '*.php' -o -iname '*.php[0-9]' -o -iname '*.phtml' -o -iname '*.phar' -o -iname '*.cgi' -o -iname '*.pl' -o -iname '*.py' -o -iname '*.sh' \) | head -3)
+bad_link=$(find "$rel/public" -type l | head -1)
+[ -z "$bad_link" ] || fail "yayında sembolik bağ var: ${bad_link#$rel/public/}"
+bad_exec=$(find "$rel/public" -type f \( -iname '*.php' -o -iname '*.php[0-9]' -o -iname '*.pht' -o -iname '*.phtml' -o -iname '*.phar' -o -iname '*.cgi' -o -iname '*.pl' -o -iname '*.py' -o -iname '*.sh' -o -iname '*.shtml' \) | head -3)
 [ -z "$bad_exec" ] || fail "yayında çalıştırılabilir dosya var: $bad_exec"
-if grep -RIEiq '^[[:space:]]*(AddHandler|SetHandler|Action|ScriptAlias|php_value|php_flag|AddType[^#]*php)' --include=.htaccess "$rel/public"; then
+# (ops/tetik/index.php → htaccess_tehlikeli() ile aynı kalıplar)
+if grep -RIEiq '^[[:blank:]]*(AddHandler|SetHandler|ForceType[^#]*(php|cgi)|Action|ScriptAlias|php_value|php_flag|php_admin_|AddType[^#]*php|(Add|Set)OutputFilter[^#]*INCLUDES)' --include=.htaccess "$rel/public" \
+  || grep -RIEiq '^[[:blank:]]*Options[[:blank:]][^#]*(^|[[:blank:]]|\+)(ExecCGI|Includes)([[:blank:]]|$)' --include=.htaccess "$rel/public" \
+  || grep -RIEiq '^[[:blank:]]*Rewrite(Rule|Cond)[[:blank:]][^#]*\[([^]]*,)?[[:blank:]]*H=' --include=.htaccess "$rel/public"; then
   fail ".htaccess içinde betik çalıştırma yönergesi var"
 fi
 if [ -f "$rel/_ops/SHA256SUMS" ] && command -v sha256sum >/dev/null 2>&1; then
@@ -161,10 +167,11 @@ stage="$OPS/stage-$rid"
 rm -rf "$stage" && mkdir -p "$stage"
 cp -a "$rel/public/." "$stage/" || { log "hazırlık: HATA"; status "stage-failed" "$remote_sha"; exit 1; }
 snap="$OPS/snapshots/$(date '+%Y%m%d-%H%M%S')"
+[ -e "$snap" ] && snap="$snap-$$"
 mkdir -p "$snap/_wpc" && : > "$snap/.moved-out" && : > "$snap/.moved-in" && : > "$snap/.wpc-moved-out"
 
 rollback() {
-  local fail_dir="$OPS/failed-$(date '+%Y%m%d-%H%M%S')"; mkdir -p "$fail_dir"
+  local fail_dir="$OPS/failed-$(date '+%Y%m%d-%H%M%S')"; [ -e "$fail_dir" ] && fail_dir="$fail_dir-$$"; mkdir -p "$fail_dir"
   while IFS= read -r e; do [ -n "$e" ] && { [ -e "$WEBROOT/$e" ] || [ -L "$WEBROOT/$e" ]; } && mv "$WEBROOT/$e" "$fail_dir/$e"; done < "$snap/.moved-in"
   while IFS= read -r e; do [ -n "$e" ] && { [ -e "$snap/$e" ] || [ -L "$snap/$e" ]; } && mv "$snap/$e" "$WEBROOT/$e"; done < "$snap/.moved-out"
   while IFS= read -r c; do [ -n "$c" ] && [ -e "$snap/_wpc/$c" ] && mv "$snap/_wpc/$c" "$WEBROOT/wp-content/$c"; done < "$snap/.wpc-moved-out"
@@ -227,7 +234,15 @@ status "live" "$remote_sha" "$checked test geçti"
 log "test: $checked/$checked geçti — CANLI"
 
 # ---------------------------------------------------------------- temizlik (son $KEEP sürüm ve anlık yedek; WordPress tam yedeği kalıcı)
-ls -1dt "$OPS"/releases/*/ 2>/dev/null | tail -n +$((KEEP+1)) | xargs -r rm -rf
-ls -1dt "$OPS"/snapshots/*/ 2>/dev/null | tail -n +$((KEEP+1)) | xargs -r rm -rf
-ls -1dt "$OPS"/failed-*/ 2>/dev/null | tail -n +3 | xargs -r rm -rf
+# Sunucu izni yüzünden silinemeyen dizin (ilk anlık yedekteki bir WordPress eklentisi böyle çıktı) tek satırla günlüğe yazılır ve
+# "silinemeyen/" altına alınır — her çalışmada yeniden denenip günlüğü binlerce satırla doldurmasın.
+temizle() {
+  local d="${1%/}"
+  chmod -R u+w "$d" 2>/dev/null; rm -rf "$d" 2>/dev/null && return 0
+  mkdir -p "$OPS/silinemeyen" && mv "$d" "$OPS/silinemeyen/" 2>/dev/null
+  log "temizlik: $d tamamen silinemedi (sunucu izni) → $OPS/silinemeyen/"
+}
+ls -1dt "$OPS"/releases/*/ 2>/dev/null | tail -n +$((KEEP+1)) | while IFS= read -r d; do temizle "$d"; done
+ls -1dt "$OPS"/snapshots/*/ 2>/dev/null | tail -n +$((KEEP+1)) | while IFS= read -r d; do temizle "$d"; done
+ls -1dt "$OPS"/failed-*/ 2>/dev/null | tail -n +3 | while IFS= read -r d; do temizle "$d"; done
 exit 0
