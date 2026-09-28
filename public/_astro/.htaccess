@@ -1,0 +1,7 @@
+# OTOMATİK ÜRETİLDİ (scripts/gen-htaccess.mjs) — bu klasördeki dosyalar içerik hash'li / değişmez: 1 yıl, immutable.
+# <FilesMatch> kök .htaccess'teki uzantı kurallarından SONRA uygulanır ve onları geçersiz kılar.
+<IfModule mod_headers.c>
+  <FilesMatch ".">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>

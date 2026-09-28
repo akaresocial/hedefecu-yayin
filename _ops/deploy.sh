@@ -2,11 +2,12 @@
 # hedefecu.com — sunucu tarafı otomatik yayın (Alastyr cPanel, cron ile 2 dakikada bir).
 #
 # Akış: açık yayın deposundaki (akaresocial/hedefecu-yayin) main dalının son commit'ini kontrol et →
-# yeni sürüm varsa indir, doğrula → public_html'in anlık yedeğini al → rsync ile kur → canlı siteyi test et →
+# yeni sürüm varsa indir, doğrula → public_html'in anlık yedeğini al → yer değiştirerek kur → canlı siteyi test et →
 # test başarısızsa yedeğe geri dön.
 #
 # Hiçbir şifre/anahtar kullanmaz (depo herkese açık; içinde yalnız derlenmiş site vardır).
 # Korunan yollar (asla taşınmaz/silinmez): /.well-known/ /eskisite/ /public_ftp/ /cgi-bin/ /wp-content/uploads/ /.user.ini /php.ini
+# ve arama motoru doğrulama dosyaları (google*.html, yandex_*.html, BingSiteAuth.xml). /eskisite/ .htaccess ile erişime kapalıdır.
 # Kurulum rsync KULLANMAZ (sunucuda yok): eski girdiler anlık yedeğe taşınır, yenileri içeri taşınır (aynı dosya sistemi → rename).
 #
 # Güvenlik kapısı: depodaki _ops/enabled dosyası "1" değilse yalnız yedek + kontrol yapılır, kurulum yapılmaz.
@@ -118,13 +119,19 @@ rid=$(tr -dc '0-9a-f' < "$rel/_ops/release-id" 2>/dev/null)
 grep -q "^$rid" "$rel/public/version.txt" 2>/dev/null || fail "version.txt yayın kimliğiyle uyuşmuyor"
 nfiles=$(find "$rel/public" -type f | wc -l)
 [ "$nfiles" -ge 100 ] || fail "dosya sayısı çok az ($nfiles)"
+bad_exec=$(find "$rel/public" -type f \( -iname '*.php' -o -iname '*.php[0-9]' -o -iname '*.phtml' -o -iname '*.phar' -o -iname '*.cgi' -o -iname '*.pl' -o -iname '*.py' -o -iname '*.sh' \) | head -3)
+[ -z "$bad_exec" ] || fail "yayında çalıştırılabilir dosya var: $bad_exec"
+if grep -RIEiq '^[[:space:]]*(AddHandler|SetHandler|Action|ScriptAlias|php_value|php_flag|AddType[^#]*php)' --include=.htaccess "$rel/public"; then
+  fail ".htaccess içinde betik çalıştırma yönergesi var"
+fi
 if [ -f "$rel/_ops/SHA256SUMS" ] && command -v sha256sum >/dev/null 2>&1; then
   (cd "$rel/public" && sha256sum --quiet -c "../_ops/SHA256SUMS") || fail "sağlama toplamı uyuşmuyor"
 fi
 
-# yayın betiğinin kendisini güncelle (bir sonraki çalışmada geçerli)
-if [ -f "$rel/_ops/deploy.sh" ] && ! cmp -s "$rel/_ops/deploy.sh" "$OPS/deploy.sh"; then
-  if bash -n "$rel/_ops/deploy.sh"; then cp "$rel/_ops/deploy.sh" "$OPS/deploy.sh.new" && mv "$OPS/deploy.sh.new" "$OPS/deploy.sh"; log "betik: güncellendi"; fi
+# Betik kendini depodan GÜNCELLEMEZ (depoya yazabilen biri sunucuda kod çalıştıramasın). Depodaki sürüm farklıysa
+# yalnız günlüğe yazılır; güncelleme için cPanel Dosya Yöneticisi'nden ~/hedefecu-ops/deploy.sh silinir → cron yeniden indirir.
+if [ -f "$rel/_ops/deploy.sh" ] && ! cmp -s "$rel/_ops/deploy.sh" "$OPS/deploy.sh" 2>/dev/null; then
+  log "betik: depodaki deploy.sh farklı — otomatik güncellenmedi"
 fi
 
 # güvenlik kapısı
@@ -137,7 +144,12 @@ fi
 # ---------------------------------------------------------------- kurulum (rsync yok → yer değiştirme; saniyenin altında)
 # Korunan girdiler public_html'de yerinde kalır; wp-content içinde yalnız uploads korunur (eski /wardofit/ görselleri).
 PRESERVE=" .well-known eskisite public_ftp cgi-bin .user.ini php.ini wp-content "
-is_preserved() { case "$PRESERVE" in *" $1 "*) return 0 ;; esac; return 1; }
+is_preserved() {
+  case "$PRESERVE" in *" $1 "*) return 0 ;; esac
+  # Search Console / Yandex / Bing doğrulama dosyaları
+  [[ "$1" =~ ^(google[0-9a-f]+\.html|yandex_[0-9a-f]+\.html|BingSiteAuth\.xml)$ ]] && return 0
+  return 1
+}
 
 stage="$OPS/stage-$rid"
 rm -rf "$stage" && mkdir -p "$stage"

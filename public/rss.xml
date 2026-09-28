@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hedef ECU Blog</title>
+    <link>https://hedefecu.com/blog/</link>
+    <atom:link href="https://hedefecu.com/rss.xml" rel="self" type="application/rss+xml" />
+    <description>Dizel emisyon sistemleri, DPF, EGR, AdBlue/SCR ve arıza tespiti üzerine yazılar — Bornova, İzmir.</description>
+    <language>tr-TR</language>
+    <lastBuildDate>Mon, 28 Sep 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>DPF Temizliği mi, Değişimi mi, Yoksa Onarımı mı?</title>
+      <link>https://hedefecu.com/dpf-temizligi-mi-degisimi-mi/</link>
+      <guid isPermaLink="true">https://hedefecu.com/dpf-temizligi-mi-degisimi-mi/</guid>
+      <pubDate>Fri, 25 Sep 2026 00:00:00 GMT</pubDate>
+      <category>DPF</category>
+      <description>DPF temizliği mi, değişimi mi sorusunun cevabı uyarıya değil, filtrenin ölçülen durumuna bağlıdır. Temizliğin, onarımın ve değişimin hangi durumda uygun olduğunu, süre ve kalıcılık farklarını anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>EGR Valfi Arızası Nasıl Anlaşılır? Belirtiler, Nedenler, Çözümler</title>
+      <link>https://hedefecu.com/egr-valfi-arizasi-nasil-anlasilir/</link>
+      <guid isPermaLink="true">https://hedefecu.com/egr-valfi-arizasi-nasil-anlasilir/</guid>
+      <pubDate>Thu, 22 May 2025 06:53:58 GMT</pubDate>
+      <category>EGR</category>
+      <description>EGR valfi arızası; arıza lambası, düzensiz rölanti, çekiş kaybı ve dumanla anlaşılır, ancak aynı belirtileri başka arızalar da verir. Belirtileri, arıza kodlarını ve doğru teşhisi anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>Uzun Yolda EGR Temizleme Gerçekten İşe Yarar mı?</title>
+      <link>https://hedefecu.com/uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/</link>
+      <guid isPermaLink="true">https://hedefecu.com/uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/</guid>
+      <pubDate>Mon, 19 May 2025 07:50:30 GMT</pubDate>
+      <category>EGR</category>
+      <description>Uzun yolda EGR temizleme beklentisi kısmen doğrudur: Sabit hızlı sürüş yeni kurum birikimini yavaşlatır ve DPF rejenerasyonuna yardım eder; ancak EGR’deki sertleşmiş kurumu yakarak temizlemez.</description>
+    </item>
+    <item>
+      <title>EGR Sökmeden Nasıl Temizlenir?</title>
+      <link>https://hedefecu.com/egr-sokmeden-nasil-temizlenir/</link>
+      <guid isPermaLink="true">https://hedefecu.com/egr-sokmeden-nasil-temizlenir/</guid>
+      <pubDate>Mon, 19 May 2025 07:28:37 GMT</pubDate>
+      <category>EGR</category>
+      <description>EGR valfi hafif kirlenmede sökmeden kısmen temizlenebilir; sertleşmiş kurumda ise sökerek temizlik gerekir. Sprey, katkı ve sürüş yöntemlerinin etkisini ve sınırlarını anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>Partikül Filtresi Temizlenmezse Ne Olur? 7 Olası Sonuç</title>
+      <link>https://hedefecu.com/partikul-filtresi-temizlenmezse-ne-olur/</link>
+      <guid isPermaLink="true">https://hedefecu.com/partikul-filtresi-temizlenmezse-ne-olur/</guid>
+      <pubDate>Sat, 10 May 2025 07:34:38 GMT</pubDate>
+      <category>DPF</category>
+      <description>Partikül filtresi temizlenmezse çekiş düşer, yakıt tüketimi artar ve araç güç kısıtlamasına girer. İhmal edildiğinde turbo, motor yağı ve filtrenin kendisi için doğan riskleri anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>EGR Temizleyici Sıvı Gerçekten İşe Yarıyor mu?</title>
+      <link>https://hedefecu.com/egr-temizleyici-sivi/</link>
+      <guid isPermaLink="true">https://hedefecu.com/egr-temizleyici-sivi/</guid>
+      <pubDate>Thu, 08 May 2025 09:46:57 GMT</pubDate>
+      <category>EGR</category>
+      <description>EGR temizleyici sıvı, sprey ve katkılar hafif kirlenmede kısmen yardımcı olabilir; sertleşmiş kurumu, elektrik arızasını veya soğutucu sorununu gidermez. Ne beklenmesi gerektiğini ve güvenli kullanımı anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>AdBlue İptal Edilir mi? Yasal Durumu, Etkileri ve Çözümler</title>
+      <link>https://hedefecu.com/adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/</link>
+      <guid isPermaLink="true">https://hedefecu.com/adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/</guid>
+      <pubDate>Thu, 08 May 2025 08:18:05 GMT</pubDate>
+      <category>AdBlue</category>
+      <description>AdBlue iptal edilir mi, yasal mıdır, muayeneden geçer mi ve araçta sorun çıkarır mı? Gelin birlikte yanıtlayalım.</description>
+    </item>
+    <item>
+      <title>Katalizör Dolarsa Ne Olur? Sorunlar ve Çözüm Önerileri</title>
+      <link>https://hedefecu.com/katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/</link>
+      <guid isPermaLink="true">https://hedefecu.com/katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/</guid>
+      <pubDate>Wed, 16 Apr 2025 08:40:35 GMT</pubDate>
+      <category>Katalizör</category>
+      <description>Katalizör dolarsa, yani tıkanır ya da verimini kaybederse çekiş düşer, yakıt tüketimi artar ve arıza lambası yanar. Nedenlerini, nasıl ölçüldüğünü ve hangi durumda temizlik ya da değişim gerektiğini anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>Yüksek Devirde Katalizör Temizliği Nedir? Etkili midir?</title>
+      <link>https://hedefecu.com/yuksek-devirde-katalizor-temizligi/</link>
+      <guid isPermaLink="true">https://hedefecu.com/yuksek-devirde-katalizor-temizligi/</guid>
+      <pubDate>Sat, 12 Apr 2025 11:00:32 GMT</pubDate>
+      <category>Katalizör</category>
+      <description>Yüksek devirde katalizör temizliği, yani uzun ve sabit hızlı sürüş, hafif birikime yardımcı olabilir; ancak hasarlı veya zehirlenmiş bir katalizörü düzeltmez. Sınırlarını ve güvenli uygulamasını anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>AdBlue İptali Yorumları: Gerçek Kullanıcı Deneyimleri</title>
+      <link>https://hedefecu.com/adblue-iptali-yorumlari/</link>
+      <guid isPermaLink="true">https://hedefecu.com/adblue-iptali-yorumlari/</guid>
+      <pubDate>Sat, 12 Apr 2025 10:11:27 GMT</pubDate>
+      <category>AdBlue</category>
+      <description>AdBlue iptali yorumları: İzmir ve çevre illerden gelen müşterilerimizin işlem sonrası gerçek deneyimleri. Birçok araç sahibi AdBlue iptaliyle arızalardan tamamen kurtulmayı tercih ediyor.</description>
+    </item>
+    <item>
+      <title>EGR İptali Yorumları ve Araç Sahiplerinin Deneyimleri</title>
+      <link>https://hedefecu.com/egr-iptali-yorumlari/</link>
+      <guid isPermaLink="true">https://hedefecu.com/egr-iptali-yorumlari/</guid>
+      <pubDate>Sat, 12 Apr 2025 09:32:16 GMT</pubDate>
+      <category>EGR</category>
+      <description>EGR iptali yorumları: EGR arızası ve tıkanıklıkla atölyemize gelen müşterilerimizin deneyimleri. Kaynağı belli yorumları ve iptalin yararlı mı, zararlı mı olduğunu ele alıyoruz.</description>
+    </item>
+    <item>
+      <title>AdBlue Arızası Neden Olur? Belirtiler, Sebepler ve Çözüm Yolları</title>
+      <link>https://hedefecu.com/adblue-arizasi-neden-olur/</link>
+      <guid isPermaLink="true">https://hedefecu.com/adblue-arizasi-neden-olur/</guid>
+      <pubDate>Sat, 12 Apr 2025 09:10:53 GMT</pubDate>
+      <category>AdBlue</category>
+      <description>AdBlue arızası neden olur sorusunun cevabı çoğu zaman bir sensör, pompa, ısıtıcı, dozaj modülü ya da sıvı kalitesi sorunudur. Belirtileri, nedenleri ve doğru teşhisi anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>Partikül Filtresi İptali Zararları Var mı? Gerçekler ve Yanlış Bilinenler</title>
+      <link>https://hedefecu.com/partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/</link>
+      <guid isPermaLink="true">https://hedefecu.com/partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/</guid>
+      <pubDate>Sat, 12 Apr 2025 08:51:46 GMT</pubDate>
+      <category>DPF</category>
+      <description>Partikül filtresi iptali zararları gerçek mi, yoksa işlem profesyonelce yapıldığında araç için faydalı mı? DPF iptali hakkındaki yanlış bilinenleri açıklığa kavuşturuyoruz.</description>
+    </item>
+    <item>
+      <title>EGR İptali Yakıtı Etkiler mi?</title>
+      <link>https://hedefecu.com/egr-iptali-yakiti-etkiler-mi/</link>
+      <guid isPermaLink="true">https://hedefecu.com/egr-iptali-yakiti-etkiler-mi/</guid>
+      <pubDate>Sat, 12 Apr 2025 08:36:27 GMT</pubDate>
+      <category>EGR</category>
+      <description>EGR iptali yakıtı etkiler mi? Doğru yazılımla yapıldığında tüketim genellikle azalır; kalitesiz iptalde ise ters sonuç doğabilir. Yakıt ekonomisine etkisini ve profesyonel iptalin önemini anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>EGR Neden Tıkanır? Belirtileri, Nedenleri ve Çözüm Önerileri</title>
+      <link>https://hedefecu.com/egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/</link>
+      <guid isPermaLink="true">https://hedefecu.com/egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/</guid>
+      <pubDate>Sat, 12 Apr 2025 08:16:47 GMT</pubDate>
+      <category>EGR</category>
+      <description>EGR neden tıkanır? Egzozdaki kurum, karter havalandırmasından gelen yağ buharıyla birleşip valfte sertleşen bir tabaka oluşturur. Nedenleri, belirtileri ve temizlik ile onarım seçeneklerini anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>Dizel Partikül Filtresi Tıkanırsa Ne Olur?</title>
+      <link>https://hedefecu.com/dizel-partikul-filtresi-tikanirsa-ne-olur/</link>
+      <guid isPermaLink="true">https://hedefecu.com/dizel-partikul-filtresi-tikanirsa-ne-olur/</guid>
+      <pubDate>Sat, 12 Apr 2025 07:26:53 GMT</pubDate>
+      <category>DPF</category>
+      <description>Partikül filtresi tıkanırsa egzoz gazı zor akar: Araç önce rejenerasyonla kendini temizlemeye çalışır, olmazsa uyarı verir ve gücünü kısar. Belirtileri, nedenleri ve ilk yapılacakları anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>AdBlue Nedir, Ne İşe Yarar, Hangi Araçlarda Kullanılır?</title>
+      <link>https://hedefecu.com/adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/</link>
+      <guid isPermaLink="true">https://hedefecu.com/adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/</guid>
+      <pubDate>Wed, 29 Nov 2023 06:35:56 GMT</pubDate>
+      <category>AdBlue</category>
+      <description>AdBlue, SCR sistemli dizel araçlarda egzozdaki azot oksitleri (NOx) azaltan üre çözeltisidir. AdBlue nedir, ne işe yarar, biterse ne olur ve nasıl doldurulur, anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>AdBlue Sistemi İptal Edilirse Ne Olur?</title>
+      <link>https://hedefecu.com/adblue-sistemi-iptal-edilirse-ne-olur/</link>
+      <guid isPermaLink="true">https://hedefecu.com/adblue-sistemi-iptal-edilirse-ne-olur/</guid>
+      <pubDate>Wed, 22 Nov 2023 06:15:13 GMT</pubDate>
+      <category>AdBlue</category>
+      <description>AdBlue iptal edilirse araç, yazılımsal olarak AdBlue sistemi yokmuş gibi çalışır; depo, pompa ve SCR ünitesi yerinde kalır. İptal sonrası yazılımda, uyarılarda ve sürüşte nelerin değiştiğini anlatıyoruz.</description>
+    </item>
+    <item>
+      <title>Dizel Partikül Filtresi (DPF) Nedir?</title>
+      <link>https://hedefecu.com/dizel-partikul-filtresi-nedir/</link>
+      <guid isPermaLink="true">https://hedefecu.com/dizel-partikul-filtresi-nedir/</guid>
+      <pubDate>Wed, 22 Nov 2023 01:30:43 GMT</pubDate>
+      <category>DPF</category>
+      <description>Dizel partikül filtresi (DPF), dizel egzozundaki kurum parçacıklarını tutan seramik petekli bir filtredir. Nasıl çalıştığını, rejenerasyonla kendini nasıl temizlediğini ve neden zamanla dolduğunu anlatıyoruz.</description>
+    </item>
+  </channel>
+</rss>

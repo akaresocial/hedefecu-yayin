@@ -1,0 +1,62 @@
+# otomatik — ops/release.mjs
+/ 200
+/adblue-arizasi-neden-olur/ 200
+/adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/ 200
+/adblue-iptali-yorumlari/ 200
+/adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/ 200
+/adblue-sistemi-iptal-edilirse-ne-olur/ 200
+/blog/ 200
+/category/blog/ 200
+/category/tuning/ 200
+/dizel-partikul-filtresi-nedir/ 200
+/dizel-partikul-filtresi-tikanirsa-ne-olur/ 200
+/egr-iptali-yakiti-etkiler-mi/ 200
+/egr-iptali-yorumlari/ 200
+/egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/ 200
+/egr-sokmeden-nasil-temizlenir/ 200
+/egr-temizleyici-sivi/ 200
+/egr-valfi-arizasi-nasil-anlasilir/ 200
+/hakkimizda/ 200
+/hizmetler/ 200
+/hizmetlerimiz/adblue_iptali/ 200
+/hizmetlerimiz/chip-tuning/ 200
+/hizmetlerimiz/dpf-temizligi/ 200
+/hizmetlerimiz/dpf_iptali/ 200
+/hizmetlerimiz/egr-temizligi/ 200
+/hizmetlerimiz/egr_iptali/ 200
+/iletisim/ 200
+/is-makineleri/ 200
+/katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/ 200
+/partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/ 200
+/partikul-filtresi-temizlenmezse-ne-olur/ 200
+/service-category/ecu/ 200
+/service-category/is-makineleri/ 200
+/service/cat-adblue-ve-dpf-partikul-iptali/ 200
+/service/kubota-kx080-4a-adblue-partikul/ 200
+/service/manifold-temizligi/ 200
+/service/sany-sy135c-adblue-ve-dpf-partikul-iptali/ 200
+/service/volvo-l220h-adblue-ve-dpf-partikul-iptali/ 200
+/tag/mechanic/ 200
+/tag/servicing/ 200
+/uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/ 200
+/yuksek-devirde-katalizor-temizligi/ 200
+/service/ 200
+/sitemap.xml 200
+/robots.txt 200
+/version.txt 200
+/bu-adres-yok-hedefecu-test/ 404
+/wardofit/2023/11/hedef-ecu-png-logo.png 200
+/wardofit/2025/01/Emulator-Site-Logo-1.png 200
+/eskisite/ 410
+/blog/page/2/ 301 /blog/
+/blog/page/3/ 301 /blog/
+/category/blog/page/2/ 301 /blog/
+/category/blog/page/3/ 301 /blog/
+/service/page/2/ 301 /hizmetler/
+/service-category/ecu/page/2/ 301 /hizmetler/
+/page/2/ 301 /
+/hizmetlerimiz/ 301 /hizmetler/
+/hizmetlerimiz/manifold-temizligi/ 301 /service/manifold-temizligi/
+/hizmetlerimiz/egr-iptali/ 301 /hizmetlerimiz/egr_iptali/
+/hizmetlerimiz/dpf-iptali/ 301 /hizmetlerimiz/dpf_iptali/
+/hizmetlerimiz/adblue-iptali/ 301 /hizmetlerimiz/adblue_iptali/

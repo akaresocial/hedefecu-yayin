@@ -1,0 +1,60 @@
+# Cloudflare Pages başlıkları — açıklama: ../docs/DEPLOY.md §5. Sınır: 100 kural, satır ≤ 2.000 karakter.
+# Pages kuralları: bir istek birden çok kurala uyarsa başlıkların hepsi eklenir; AYNI başlık iki kez gelirse değerler
+# virgülle BİRLEŞİR. Bu yüzden Cache-Control hiçbir yerde /* ile verilmez; HTML için yalnız "/"'yla biten yollar
+# (/, /:a/, /:a/:b/) hedeflenir — /_astro/*, /wardofit/* gibi dosya yollarıyla çakışmaz.
+# Pages varsayılanları (kendiliğinden gelir): X-Content-Type-Options: nosniff, Referrer-Policy: strict-origin-when-cross-origin,
+# Cache-Control: public, max-age=0, must-revalidate, ETag. Yönlendirme (301) yanıtlarına _headers uygulanmaz.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000
+
+# CSP önerisi (rapor modu) — BİLEREK KAPALI: Chrome, report-uri/report-to olmayan Report-Only politikası için her sayfada
+# konsola HATA yazar (Lighthouse "Best practices" düşer). Bir rapor uç noktası kurulunca aşağıdaki satırı /* bloğuna alın ve
+# sonuna "; report-uri https://<uç-nokta>" ekleyin. GTM/GA4/Ads alan adları dahil; inline betikler için 'unsafe-inline' şart
+# (tracking + menü + çerez paneli betikleri inline; form yok). Ayrıntı: DEPLOY.md §5.2.
+#Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.doubleclick.net https://www.google.com https://google.com https://www.googleadservices.com https://pagead2.googlesyndication.com; frame-src https://www.googletagmanager.com https://*.doubleclick.net https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'
+
+# HTML (tüm sayfalar "/" ile biter): tarayıcıda kısa önbellek + arka planda tazeleme. Deploy sonrası en geç 5 dk eski HTML.
+/
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+/:a/
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+/:a/:b/
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+
+# Hash'li varlıklar (fontlar dahil: src/assets/fonts → /_astro/*.HASH.woff2)
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Eski WordPress görsel yolları (dosyalar değişmez; yalnız eski URL'ler kırılmasın diye)
+/wardofit/*
+  Cache-Control: public, max-age=31536000
+
+/favicon.ico
+  Cache-Control: public, max-age=604800
+/favicon.svg
+  Cache-Control: public, max-age=604800
+/favicon-32.png
+  Cache-Control: public, max-age=604800
+/apple-touch-icon.png
+  Cache-Control: public, max-age=604800
+/icon-512.png
+  Cache-Control: public, max-age=604800
+/og/*
+  Cache-Control: public, max-age=604800
+
+/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+# pages.dev alan adı (üretim + önizleme) indekslenmesin; yalnız hedefecu.com
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex

@@ -1,0 +1,362 @@
+# =====================================================================================================
+# hedefecu.com — Alastyr (cPanel · LiteSpeed / Apache 2.4) .htaccess
+# OTOMATİK ÜRETİLDİ — elle düzenlemeyin: cd site && npm run htaccess  (scripts/gen-htaccess.mjs)
+# Kaynak: ../legacy/url-map.json · Açıklama ve geçiş planı: docs/DEPLOY-ALASTYR.md
+# Kanonik köken: https://hedefecu.com   (yönlendirmelerin hepsi buraya, tek atlamada)
+# =====================================================================================================
+
+# --- 1) Temel ---------------------------------------------------------------------------------------
+# Dizin listeleme KAPALI (eski sitede /wardofit/ ve /wp-content/uploads/ "Index of" veriyordu).
+Options -Indexes
+DirectoryIndex index.html
+AddDefaultCharset UTF-8
+# Bilinmeyen adres: gerçek 404 + markalı sayfa. 403/410 da aynı sayfayı gösterir (durum kodu korunur).
+ErrorDocument 404 /404.html
+ErrorDocument 403 /404.html
+ErrorDocument 410 /404.html
+
+<IfModule mod_mime.c>
+  AddType image/avif .avif
+  AddType image/webp .webp
+  AddType font/woff2 .woff2
+  AddType image/svg+xml .svg
+  AddType application/manifest+json .webmanifest
+</IfModule>
+
+# --- 2) Yeniden yazma ----------------------------------------------------------------------------------
+RewriteEngine On
+
+# 2.0 SSL doğrulaması (cPanel AutoSSL / Let's Encrypt): /.well-known/ hiçbir kurala takılmaz.
+RewriteRule ^\.well-known/ - [L]
+
+# 2.1 Gizli/sunucu dosyaları: .htaccess, .git, .env, error_log, php.ini, yedek/arşiv, Cloudflare dosyaları → 403
+RewriteRule (?:^|/)\. - [F]
+RewriteRule (?:^|/)(?:error_log|php\.ini|_redirects|_headers)$ - [F]
+RewriteRule \.(?:sql|zip|tar|tgz|7z|rar|bak|old|orig|log|sh|swp|ini|env)$ - [F]
+
+# 2.1b Eski görsel adresleri (Google Görseller) — sunucuda wp-content/uploads KORUNUR (ops/deploy.sh).
+# /wardofit/ = eski WordPress takma adı: pakette kopyası yoksa sunucudaki wp-content/uploads dosyası verilir.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{DOCUMENT_ROOT}/wp-content/uploads/$1 -f
+RewriteRule ^wardofit/(.+\.(?:jpe?g|png|gif|webp|avif|svg|pdf))$ /wp-content/uploads/$1 [L,NC]
+# wp-content/uploads altındaki mevcut görsel/PDF doğrudan sunulur; wp-content altındaki diğer her şey 2.2'de 410.
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^wp-content/uploads/.+\.(?:jpe?g|png|gif|webp|avif|svg|pdf)$ - [L,NC]
+# Sitede hiçbir betik çalışmaz: sunucuda kalmış bir .php/.phtml/.cgi dosyası istenirse 403.
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule \.(?:php\d?|phtml|phar|cgi|pl|py)$ - [F,NC]
+
+<IfModule mod_alias.c>
+  RedirectMatch 410 ^/eskisite(?:/.*)?$
+</IfModule>
+
+# 2.2 Kalıcı olarak kaldırılanlar (url-map gone-410) → 410 Gone
+RewriteCond %{QUERY_STRING} (?:^|&)elementor_library=pricing(?:&|$)
+RewriteRule ^(?:index\.php)?$ - [G]
+RewriteCond %{QUERY_STRING} (?:^|&)elementor_library=footer-landing(?:&|$)
+RewriteRule ^(?:index\.php)?$ - [G]
+RewriteCond %{QUERY_STRING} (?:^|&)elementor_library=hidden-sidebar(?:&|$)
+RewriteRule ^(?:index\.php)?$ - [G]
+RewriteCond %{QUERY_STRING} (?:^|&)elementor_library=hizmet(?:&|$)
+RewriteRule ^(?:index\.php)?$ - [G]
+RewriteCond %{QUERY_STRING} (?:^|&)elementor_library=default-kit(?:&|$)
+RewriteRule ^(?:index\.php)?$ - [G]
+RewriteCond %{QUERY_STRING} (?:^|&)s=
+RewriteRule ^(?:index\.php)?$ - [G]
+RewriteRule ^wp-json(?:/|$) - [G]
+RewriteRule ^search(?:/|$) - [G]
+RewriteRule ^yonetim(?:/|$) - [G]
+RewriteRule ^wp-admin(?:/|$) - [G]
+RewriteRule ^wp-content(?:/|$) - [G]
+RewriteRule ^eechoawh(?:/|$) - [G]
+RewriteRule ^toogocud(?:/|$) - [G]
+RewriteRule ^category/uncategorized/?$ - [G]
+RewriteRule ^2025/?$ - [G]
+RewriteRule ^pxl-template/pricing-tab/?$ - [G]
+RewriteRule ^pxl-template/header-car-shop/?$ - [G]
+RewriteRule ^pxl-template/footer-with-box-contact-2/?$ - [G]
+RewriteRule ^pxl-template/header-landing/?$ - [G]
+RewriteRule ^pxl-template/header-landing-sticky/?$ - [G]
+RewriteRule ^pxl-template/footer-landing/?$ - [G]
+RewriteRule ^pxl-template/footer-404-coming-soon/?$ - [G]
+RewriteRule ^pxl-template/slide-home-1-1/?$ - [G]
+RewriteRule ^pxl-template/slide-home-1-2/?$ - [G]
+RewriteRule ^pxl-template/slide-home-1-3/?$ - [G]
+RewriteRule ^pxl-template/footer-1/?$ - [G]
+RewriteRule ^pxl-template/hidden-sidebar/?$ - [G]
+RewriteRule ^pxl-template/header-1-sticky/?$ - [G]
+RewriteRule ^pxl-template/page-title-1/?$ - [G]
+RewriteRule ^pxl-template/footer-with-box-contact/?$ - [G]
+RewriteRule ^pxl-template/header-1/?$ - [G]
+RewriteRule ^comments/feed/?$ - [G]
+RewriteRule ^wp-login\.php$ - [G]
+RewriteRule ^xmlrpc\.php$ - [G]
+
+# 2.3 WordPress kısa linkleri (/?p=ID ve /index.php?p=ID) → kalıcı adres; sorgu dizesi temizlenir (sondaki "?").
+RewriteCond %{QUERY_STRING} (?:^|&)p=121(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=122(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/hakkimizda/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=123(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/blog/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=124(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/iletisim/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=125(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/hizmetler/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9040(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/is-makineleri/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=950(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/hizmetlerimiz/adblue_iptali/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=948(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/hizmetlerimiz/dpf_iptali/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=946(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/hizmetlerimiz/egr_iptali/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8737(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/hizmetlerimiz/chip-tuning/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8727(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/hizmetlerimiz/dpf-temizligi/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8729(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/hizmetlerimiz/egr-temizligi/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=13007(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/service/cat-adblue-ve-dpf-partikul-iptali/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9075(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/service/kubota-kx080-4a-adblue-partikul/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=12721(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/service/manifold-temizligi/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9050(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/service/sany-sy135c-adblue-ve-dpf-partikul-iptali/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9085(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/service/volvo-l220h-adblue-ve-dpf-partikul-iptali/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9036(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/egr-valfi-arizasi-nasil-anlasilir/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9032(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9028(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/egr-sokmeden-nasil-temizlenir/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9020(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/partikul-filtresi-temizlenmezse-ne-olur/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9016(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/egr-temizleyici-sivi/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9010(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=9005(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8996(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/yuksek-devirde-katalizor-temizligi/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8992(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/adblue-iptali-yorumlari/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8987(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/egr-iptali-yorumlari/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8982(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/adblue-arizasi-neden-olur/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8978(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8972(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/egr-iptali-yakiti-etkiler-mi/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8963(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=8946(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/dizel-partikul-filtresi-tikanirsa-ne-olur/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=804(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=340(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/adblue-sistemi-iptal-edilirse-ne-olur/? [R=301,L]
+RewriteCond %{QUERY_STRING} (?:^|&)p=307(?:&|$)
+RewriteRule ^(?:index\.php)?$ https://hedefecu.com/dizel-partikul-filtresi-nedir/? [R=301,L]
+# /index.php (WP ön denetleyicisi) → ana sayfa; sorgu (gclid/utm) korunur.
+RewriteRule ^index\.php$ https://hedefecu.com/ [R=301,L]
+
+# 2.4 Çalıştırılabilir betikler (yeni site tamamen statik): eski WP dosyası unutulsa bile çalışmaz → 403
+RewriteRule \.(?:php[0-9]?|phtml|phar|pl|py|cgi|asp|aspx|jsp)$ - [F]
+
+# 2.5 Eski adresler → yeni/kalıcı adres (url-map redirect-301). "/"'lu ve "/"'suz hâli aynı kural; gclid/utm korunur.
+#   · pagination
+RewriteRule ^blog/page/2/?$ https://hedefecu.com/blog/ [R=301,L]
+RewriteRule ^blog/page/3/?$ https://hedefecu.com/blog/ [R=301,L]
+RewriteRule ^category/blog/page/2/?$ https://hedefecu.com/blog/ [R=301,L]
+RewriteRule ^category/blog/page/3/?$ https://hedefecu.com/blog/ [R=301,L]
+RewriteRule ^service/page/2/?$ https://hedefecu.com/hizmetler/ [R=301,L]
+RewriteRule ^service-category/ecu/page/2/?$ https://hedefecu.com/hizmetler/ [R=301,L]
+RewriteRule ^page/2/?$ https://hedefecu.com/ [R=301,L]
+#   · hub-alias
+RewriteRule ^hizmetlerimiz/?$ https://hedefecu.com/hizmetler/ [R=301,L]
+#   · legacy-variant
+RewriteRule ^hizmetlerimiz/manifold-temizligi/?$ https://hedefecu.com/service/manifold-temizligi/ [R=301,L]
+#   · broken-internal-link
+RewriteRule ^hizmetlerimiz/egr-iptali/?$ https://hedefecu.com/hizmetlerimiz/egr_iptali/ [R=301,L]
+#   · slug-variant
+RewriteRule ^hizmetlerimiz/dpf-iptali/?$ https://hedefecu.com/hizmetlerimiz/dpf_iptali/ [R=301,L]
+RewriteRule ^hizmetlerimiz/adblue-iptali/?$ https://hedefecu.com/hizmetlerimiz/adblue_iptali/ [R=301,L]
+#   · broken-internal-link
+RewriteCond %{THE_REQUEST} ^[A-Z]+\s/hizmetlerimiz/egr_iptali//+(?:[?\s])
+RewriteRule ^ https://hedefecu.com/hizmetlerimiz/egr_iptali/ [R=301,L]
+RewriteRule ^egr-iptali/?$ https://hedefecu.com/hizmetlerimiz/egr_iptali/ [R=301,L]
+RewriteRule ^dpf-iptali/?$ https://hedefecu.com/hizmetlerimiz/dpf_iptali/ [R=301,L]
+#   · slug-variant
+RewriteRule ^adblue-iptali/?$ https://hedefecu.com/hizmetlerimiz/adblue_iptali/ [R=301,L]
+#   · legacy-slug
+RewriteRule ^egr-valfi-temizligi/?$ https://hedefecu.com/hizmetlerimiz/egr-temizligi/ [R=301,L]
+RewriteRule ^chip-tuning/?$ https://hedefecu.com/hizmetlerimiz/chip-tuning/ [R=301,L]
+RewriteRule ^adblue_iptali/?$ https://hedefecu.com/hizmetlerimiz/adblue_iptali/ [R=301,L]
+RewriteRule ^dpf_iptali/?$ https://hedefecu.com/hizmetlerimiz/dpf_iptali/ [R=301,L]
+RewriteRule ^egr_iptali/?$ https://hedefecu.com/hizmetlerimiz/egr_iptali/ [R=301,L]
+#   · slug-variant
+RewriteRule ^hizmetlerimiz/is-makineleri/?$ https://hedefecu.com/is-makineleri/ [R=301,L]
+#   · cpt-prefix-variant
+RewriteRule ^service/adblue_iptali/?$ https://hedefecu.com/hizmetlerimiz/adblue_iptali/ [R=301,L]
+RewriteRule ^service/dpf_iptali/?$ https://hedefecu.com/hizmetlerimiz/dpf_iptali/ [R=301,L]
+RewriteRule ^service/egr_iptali/?$ https://hedefecu.com/hizmetlerimiz/egr_iptali/ [R=301,L]
+RewriteRule ^service/chip-tuning/?$ https://hedefecu.com/hizmetlerimiz/chip-tuning/ [R=301,L]
+RewriteRule ^hizmetlerimiz/cat-adblue-ve-dpf-partikul-iptali/?$ https://hedefecu.com/service/cat-adblue-ve-dpf-partikul-iptali/ [R=301,L]
+RewriteRule ^hizmetlerimiz/kubota-kx080-4a-adblue-partikul/?$ https://hedefecu.com/service/kubota-kx080-4a-adblue-partikul/ [R=301,L]
+RewriteRule ^hizmetlerimiz/sany-sy135c-adblue-ve-dpf-partikul-iptali/?$ https://hedefecu.com/service/sany-sy135c-adblue-ve-dpf-partikul-iptali/ [R=301,L]
+RewriteRule ^hizmetlerimiz/volvo-l220h-adblue-ve-dpf-partikul-iptali/?$ https://hedefecu.com/service/volvo-l220h-adblue-ve-dpf-partikul-iptali/ [R=301,L]
+#   · feed
+RewriteRule ^feed/?$ https://hedefecu.com/rss.xml [R=301,L]
+#   · feed-slug
+RewriteRule ^hakkimizda/feed/?$ https://hedefecu.com/hakkimizda/ [R=301,L]
+RewriteRule ^iletisim/feed/?$ https://hedefecu.com/iletisim/ [R=301,L]
+RewriteRule ^hizmetler/feed/?$ https://hedefecu.com/hizmetler/ [R=301,L]
+RewriteRule ^is-makineleri/feed/?$ https://hedefecu.com/is-makineleri/ [R=301,L]
+RewriteRule ^blog/feed/?$ https://hedefecu.com/blog/ [R=301,L]
+RewriteRule ^hizmetlerimiz/adblue_iptali/feed/?$ https://hedefecu.com/hizmetlerimiz/adblue_iptali/ [R=301,L]
+RewriteRule ^hizmetlerimiz/dpf_iptali/feed/?$ https://hedefecu.com/hizmetlerimiz/dpf_iptali/ [R=301,L]
+RewriteRule ^hizmetlerimiz/egr_iptali/feed/?$ https://hedefecu.com/hizmetlerimiz/egr_iptali/ [R=301,L]
+RewriteRule ^hizmetlerimiz/chip-tuning/feed/?$ https://hedefecu.com/hizmetlerimiz/chip-tuning/ [R=301,L]
+RewriteRule ^hizmetlerimiz/dpf-temizligi/feed/?$ https://hedefecu.com/hizmetlerimiz/dpf-temizligi/ [R=301,L]
+RewriteRule ^hizmetlerimiz/egr-temizligi/feed/?$ https://hedefecu.com/hizmetlerimiz/egr-temizligi/ [R=301,L]
+RewriteRule ^service/manifold-temizligi/feed/?$ https://hedefecu.com/service/manifold-temizligi/ [R=301,L]
+RewriteRule ^service/cat-adblue-ve-dpf-partikul-iptali/feed/?$ https://hedefecu.com/service/cat-adblue-ve-dpf-partikul-iptali/ [R=301,L]
+RewriteRule ^service/kubota-kx080-4a-adblue-partikul/feed/?$ https://hedefecu.com/service/kubota-kx080-4a-adblue-partikul/ [R=301,L]
+RewriteRule ^service/sany-sy135c-adblue-ve-dpf-partikul-iptali/feed/?$ https://hedefecu.com/service/sany-sy135c-adblue-ve-dpf-partikul-iptali/ [R=301,L]
+RewriteRule ^service/volvo-l220h-adblue-ve-dpf-partikul-iptali/feed/?$ https://hedefecu.com/service/volvo-l220h-adblue-ve-dpf-partikul-iptali/ [R=301,L]
+RewriteRule ^dizel-partikul-filtresi-tikanirsa-ne-olur/feed/?$ https://hedefecu.com/dizel-partikul-filtresi-tikanirsa-ne-olur/ [R=301,L]
+RewriteRule ^egr-iptali-yorumlari/feed/?$ https://hedefecu.com/egr-iptali-yorumlari/ [R=301,L]
+RewriteRule ^adblue-arizasi-neden-olur/feed/?$ https://hedefecu.com/adblue-arizasi-neden-olur/ [R=301,L]
+RewriteRule ^partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/feed/?$ https://hedefecu.com/partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/ [R=301,L]
+RewriteRule ^egr-iptali-yakiti-etkiler-mi/feed/?$ https://hedefecu.com/egr-iptali-yakiti-etkiler-mi/ [R=301,L]
+RewriteRule ^egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/feed/?$ https://hedefecu.com/egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/ [R=301,L]
+RewriteRule ^adblue-sistemi-iptal-edilirse-ne-olur/feed/?$ https://hedefecu.com/adblue-sistemi-iptal-edilirse-ne-olur/ [R=301,L]
+RewriteRule ^dizel-partikul-filtresi-nedir/feed/?$ https://hedefecu.com/dizel-partikul-filtresi-nedir/ [R=301,L]
+RewriteRule ^adblue-iptali-yorumlari/feed/?$ https://hedefecu.com/adblue-iptali-yorumlari/ [R=301,L]
+RewriteRule ^adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/feed/?$ https://hedefecu.com/adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/ [R=301,L]
+RewriteRule ^yuksek-devirde-katalizor-temizligi/feed/?$ https://hedefecu.com/yuksek-devirde-katalizor-temizligi/ [R=301,L]
+RewriteRule ^katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/feed/?$ https://hedefecu.com/katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/ [R=301,L]
+RewriteRule ^adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/feed/?$ https://hedefecu.com/adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/ [R=301,L]
+RewriteRule ^partikul-filtresi-temizlenmezse-ne-olur/feed/?$ https://hedefecu.com/partikul-filtresi-temizlenmezse-ne-olur/ [R=301,L]
+RewriteRule ^egr-temizleyici-sivi/feed/?$ https://hedefecu.com/egr-temizleyici-sivi/ [R=301,L]
+RewriteRule ^egr-sokmeden-nasil-temizlenir/feed/?$ https://hedefecu.com/egr-sokmeden-nasil-temizlenir/ [R=301,L]
+RewriteRule ^uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/feed/?$ https://hedefecu.com/uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/ [R=301,L]
+RewriteRule ^egr-valfi-arizasi-nasil-anlasilir/feed/?$ https://hedefecu.com/egr-valfi-arizasi-nasil-anlasilir/ [R=301,L]
+RewriteRule ^category/blog/feed/?$ https://hedefecu.com/blog/ [R=301,L]
+RewriteRule ^category/tuning/feed/?$ https://hedefecu.com/blog/ [R=301,L]
+RewriteRule ^tag/mechanic/feed/?$ https://hedefecu.com/blog/ [R=301,L]
+RewriteRule ^tag/servicing/feed/?$ https://hedefecu.com/blog/ [R=301,L]
+RewriteRule ^service-category/ecu/feed/?$ https://hedefecu.com/hizmetler/ [R=301,L]
+RewriteRule ^service-category/is-makineleri/feed/?$ https://hedefecu.com/is-makineleri/ [R=301,L]
+RewriteRule ^service/feed/?$ https://hedefecu.com/hizmetler/ [R=301,L]
+#   · sitemap
+RewriteRule ^post-sitemap1\.xml$ https://hedefecu.com/sitemap.xml [R=301,L]
+RewriteRule ^page-sitemap1\.xml$ https://hedefecu.com/sitemap.xml [R=301,L]
+RewriteRule ^pxl-template-sitemap1\.xml$ https://hedefecu.com/sitemap.xml [R=301,L]
+RewriteRule ^service-sitemap1\.xml$ https://hedefecu.com/sitemap.xml [R=301,L]
+RewriteRule ^elementor_library-sitemap1\.xml$ https://hedefecu.com/sitemap.xml [R=301,L]
+RewriteRule ^category-sitemap1\.xml$ https://hedefecu.com/sitemap.xml [R=301,L]
+RewriteRule ^post_tag-sitemap1\.xml$ https://hedefecu.com/sitemap.xml [R=301,L]
+RewriteRule ^service-category-sitemap1\.xml$ https://hedefecu.com/sitemap.xml [R=301,L]
+
+# 2.6 Sonda "/" olmayan klasör adresi → "/"'lu kanonik adres (tek atlama, sorgu korunur). mod_dir DirectorySlash'tan
+#     önce çalışır ve http/www durumunda da doğrudan https://kanonik adrese gider.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(.*[^/])$ https://hedefecu.com/$1/ [R=301,L]
+
+# 2.7 http → https ve www (ya da başka bir alt ad, ör. mail.) → hedefecu.com: tek atlama, yol + sorgu korunur.
+#     Hata sayfasının (ErrorDocument /404.html) iç isteği 301'e dönmesin: yalnız ilk istek + 404.html hariç.
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteCond %{REQUEST_URI} !^/404\.html
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} !^hedefecu\.com(?::443)?$ [NC]
+RewriteRule ^ https://hedefecu.com%{REQUEST_URI} [R=301,L]
+
+# --- 3) Sıkıştırma -------------------------------------------------------------------------------------
+# LiteSpeed: br/gzip sunucu düzeyinde (statik dosya sıkıştırma önbelleği); .htaccess'ten açılıp kapanmaz.
+# Apache: mod_brotli varsa br, yoksa mod_deflate gzip (dinamik) + aşağıdaki önceden sıkıştırılmış (.br q11 / .gz -9) dosyalar.
+<IfModule mod_filter.c>
+  <IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css application/xml application/rss+xml application/javascript application/json application/manifest+json image/svg+xml image/x-icon
+  </IfModule>
+  <IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/xml application/rss+xml application/javascript application/json application/manifest+json image/svg+xml image/x-icon
+  </IfModule>
+</IfModule>
+
+# Önceden sıkıştırılmış dosyalar — yalnız Apache (LiteSpeed kendi sıkıştırır; bu blok orada atlanır)
+<IfModule !LiteSpeed>
+  <IfModule mod_mime.c>
+    # .gz/.br dosyası "arşiv" değil, içerik kodlaması (Content-Encoding) olarak sunulsun
+    RemoveType .br .gz
+    AddEncoding br .br
+    AddEncoding gzip .gz
+  </IfModule>
+  # Tarayıcı br/gzip kabul ediyorsa ve dosyanın .br/.gz ikizi varsa onu sun (klasör adresleri mod_dir → index.html
+  # alt isteğinde yakalanır; hata sayfalarında da çalışır, durum kodu 404/410/403 olarak kalır — yerelde doğrulandı).
+  RewriteCond %{HTTP:Accept-Encoding} \bbr\b
+  RewriteCond %{REQUEST_FILENAME}.br -f
+  RewriteRule \.(?:html|xml|txt|svg)$ %{REQUEST_URI}.br [L]
+  RewriteCond %{HTTP:Accept-Encoding} \bgzip\b
+  RewriteCond %{REQUEST_FILENAME}.gz -f
+  RewriteRule \.(?:html|xml|txt|svg)$ %{REQUEST_URI}.gz [L]
+  # Önceden sıkıştırılmış yanıtı sunucu bir daha sıkıştırmasın
+  RewriteRule \.(?:br|gz)$ - [E=no-gzip:1,E=no-brotli:1]
+  <FilesMatch "\.html\.(?:br|gz)$">
+    ForceType "text/html; charset=utf-8"
+  </FilesMatch>
+  <FilesMatch "\.xml\.(?:br|gz)$">
+    ForceType "application/xml; charset=utf-8"
+  </FilesMatch>
+  <FilesMatch "\.txt\.(?:br|gz)$">
+    ForceType "text/plain; charset=utf-8"
+  </FilesMatch>
+  <FilesMatch "\.svg\.(?:br|gz)$">
+    ForceType image/svg+xml
+  </FilesMatch>
+  <IfModule mod_headers.c>
+    <FilesMatch "\.(?:html|xml|txt|svg)(?:\.br|\.gz)?$">
+      Header merge Vary Accept-Encoding
+    </FilesMatch>
+  </IfModule>
+</IfModule>
+
+# --- 4) Önbellek (Cache-Control; doğrulama ETag/Last-Modified ile) -------------------------------------
+# HTML: her açılışta sunucuya sorulur (304 ile hızlı); yayın sonrası eski sayfa görülmez.
+# /_astro/ ve /fonts/: kendi klasörlerindeki .htaccess → 1 yıl immutable (hash'li dosya adları).
+<IfModule mod_headers.c>
+  <FilesMatch "\.html?(?:\.br|\.gz)?$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(?:xml|txt)(?:\.br|\.gz)?$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+  <FilesMatch "\.(?:jpe?g|png|gif|webp|avif|svg|ico|bmp)(?:\.br|\.gz)?$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.(?:woff2?|ttf|otf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+# RSS doğru türle (önceden sıkıştırılmış ikizi dahil)
+<FilesMatch "^rss\.xml(?:\.br|\.gz)?$">
+  ForceType application/rss+xml
+</FilesMatch>
+
+# --- 5) Güvenlik başlıkları (GTM/GA4/Ads'i etkilemez; CSP bilerek yok — DEPLOY.md §5.2) -------------------
+# HSTS: includeSubDomains YOK (mail/webmail/cpanel alt adları etkilenmesin), preload yok.
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  Header always set Strict-Transport-Security "max-age=31536000"
+  Header always unset X-Powered-By
+  Header unset X-Powered-By
+</IfModule>

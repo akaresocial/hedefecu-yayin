@@ -1,0 +1,263 @@
+# OTOMATİK ÜRETİLDİ — elle düzenlemeyin: npm run redirects (kaynak ../legacy/url-map.json; açıklama docs/DEPLOY.md §4).
+# Cloudflare Pages: kaynak birebir eşleşir (sondaki "/" dahil), query eşleşmez ama hedefe aynen taşınır (gclid/utm korunur).
+# gone-410 kayıtları burada yok: bu yollar 404.html ile 404 döner (Pages _redirects 410 desteklemez).
+
+# --- Hub birleştirme (/hizmetlerimiz/ hub değil) ---
+/hizmetlerimiz/                                                /hizmetler/  301
+/hizmetlerimiz                                                 /hizmetler/  301
+
+# --- Eski varyantlar ---
+/hizmetlerimiz/manifold-temizligi/                             /service/manifold-temizligi/  301
+/hizmetlerimiz/manifold-temizligi                              /service/manifold-temizligi/  301
+
+# --- Eski sitedeki kırık iç linkler ---
+/hizmetlerimiz/egr_iptali//                                    /hizmetlerimiz/egr_iptali/  301
+/hizmetlerimiz/egr_iptali                                      /hizmetlerimiz/egr_iptali/  301
+/hizmetlerimiz/egr-iptali/                                     /hizmetlerimiz/egr_iptali/  301
+/hizmetlerimiz/egr-iptali                                      /hizmetlerimiz/egr_iptali/  301
+/egr-iptali/                                                   /hizmetlerimiz/egr_iptali/  301
+/egr-iptali                                                    /hizmetlerimiz/egr_iptali/  301
+/dpf-iptali/                                                   /hizmetlerimiz/dpf_iptali/  301
+/dpf-iptali                                                    /hizmetlerimiz/dpf_iptali/  301
+
+# --- Tire/alt çizgi slug varyantları ---
+/hizmetlerimiz/dpf-iptali/                                     /hizmetlerimiz/dpf_iptali/  301
+/hizmetlerimiz/dpf-iptali                                      /hizmetlerimiz/dpf_iptali/  301
+/hizmetlerimiz/adblue-iptali/                                  /hizmetlerimiz/adblue_iptali/  301
+/hizmetlerimiz/adblue-iptali                                   /hizmetlerimiz/adblue_iptali/  301
+/hizmetlerimiz/is-makineleri/                                  /is-makineleri/  301
+/hizmetlerimiz/is-makineleri                                   /is-makineleri/  301
+/adblue-iptali/                                                /hizmetlerimiz/adblue_iptali/  301
+/adblue-iptali                                                 /hizmetlerimiz/adblue_iptali/  301
+
+# --- Eski slug'lar (WP'nin bugün yaptığı 301'lerin kopyası) ---
+/egr-valfi-temizligi/                                          /hizmetlerimiz/egr-temizligi/  301
+/egr-valfi-temizligi                                           /hizmetlerimiz/egr-temizligi/  301
+/chip-tuning/                                                  /hizmetlerimiz/chip-tuning/  301
+/chip-tuning                                                   /hizmetlerimiz/chip-tuning/  301
+/adblue_iptali/                                                /hizmetlerimiz/adblue_iptali/  301
+/adblue_iptali                                                 /hizmetlerimiz/adblue_iptali/  301
+/dpf_iptali/                                                   /hizmetlerimiz/dpf_iptali/  301
+/dpf_iptali                                                    /hizmetlerimiz/dpf_iptali/  301
+/egr_iptali/                                                   /hizmetlerimiz/egr_iptali/  301
+/egr_iptali                                                    /hizmetlerimiz/egr_iptali/  301
+
+# --- Aynı içerik türünün iki öneki: /service/ ↔ /hizmetlerimiz/ ---
+/service/adblue_iptali/                                        /hizmetlerimiz/adblue_iptali/  301
+/service/adblue_iptali                                         /hizmetlerimiz/adblue_iptali/  301
+/service/dpf_iptali/                                           /hizmetlerimiz/dpf_iptali/  301
+/service/dpf_iptali                                            /hizmetlerimiz/dpf_iptali/  301
+/service/egr_iptali/                                           /hizmetlerimiz/egr_iptali/  301
+/service/egr_iptali                                            /hizmetlerimiz/egr_iptali/  301
+/service/chip-tuning/                                          /hizmetlerimiz/chip-tuning/  301
+/service/chip-tuning                                           /hizmetlerimiz/chip-tuning/  301
+/hizmetlerimiz/cat-adblue-ve-dpf-partikul-iptali/              /service/cat-adblue-ve-dpf-partikul-iptali/  301
+/hizmetlerimiz/cat-adblue-ve-dpf-partikul-iptali               /service/cat-adblue-ve-dpf-partikul-iptali/  301
+/hizmetlerimiz/kubota-kx080-4a-adblue-partikul/                /service/kubota-kx080-4a-adblue-partikul/  301
+/hizmetlerimiz/kubota-kx080-4a-adblue-partikul                 /service/kubota-kx080-4a-adblue-partikul/  301
+/hizmetlerimiz/sany-sy135c-adblue-ve-dpf-partikul-iptali/      /service/sany-sy135c-adblue-ve-dpf-partikul-iptali/  301
+/hizmetlerimiz/sany-sy135c-adblue-ve-dpf-partikul-iptali       /service/sany-sy135c-adblue-ve-dpf-partikul-iptali/  301
+/hizmetlerimiz/volvo-l220h-adblue-ve-dpf-partikul-iptali/      /service/volvo-l220h-adblue-ve-dpf-partikul-iptali/  301
+/hizmetlerimiz/volvo-l220h-adblue-ve-dpf-partikul-iptali       /service/volvo-l220h-adblue-ve-dpf-partikul-iptali/  301
+
+# --- Sayfalama (tüm liste tek sayfada) ---
+/category/blog/page/2/                                         /blog/  301
+/category/blog/page/2                                          /blog/  301
+/category/blog/page/3/                                         /blog/  301
+/category/blog/page/3                                          /blog/  301
+/service-category/ecu/page/2/                                  /hizmetler/  301
+/service-category/ecu/page/2                                   /hizmetler/  301
+/blog/page/2/                                                  /blog/  301
+/blog/page/2                                                   /blog/  301
+/blog/page/3/                                                  /blog/  301
+/blog/page/3                                                   /blog/  301
+/service/page/2/                                               /hizmetler/  301
+/service/page/2                                                /hizmetler/  301
+/page/2/                                                       /  301
+/page/2                                                        /  301
+
+# --- Feed ---
+/feed/                                                         /rss.xml  301
+/feed                                                          /rss.xml  301
+
+# --- Eski SmartCrawl alt sitemap'leri → tek /sitemap.xml ---
+/post-sitemap1.xml                                             /sitemap.xml  301
+/page-sitemap1.xml                                             /sitemap.xml  301
+/pxl-template-sitemap1.xml                                     /sitemap.xml  301
+/service-sitemap1.xml                                          /sitemap.xml  301
+/elementor_library-sitemap1.xml                                /sitemap.xml  301
+/category-sitemap1.xml                                         /sitemap.xml  301
+/post_tag-sitemap1.xml                                         /sitemap.xml  301
+/service-category-sitemap1.xml                                 /sitemap.xml  301
+
+# --- Sayfa/yazı başına WP feed'leri (url-map: /:slug/feed/ → /:slug/, açık liste) ---
+/hakkimizda/feed/                                              /hakkimizda/  301
+/hakkimizda/feed                                               /hakkimizda/  301
+/iletisim/feed/                                                /iletisim/  301
+/iletisim/feed                                                 /iletisim/  301
+/hizmetler/feed/                                               /hizmetler/  301
+/hizmetler/feed                                                /hizmetler/  301
+/is-makineleri/feed/                                           /is-makineleri/  301
+/is-makineleri/feed                                            /is-makineleri/  301
+/blog/feed/                                                    /blog/  301
+/blog/feed                                                     /blog/  301
+/hizmetlerimiz/adblue_iptali/feed/                             /hizmetlerimiz/adblue_iptali/  301
+/hizmetlerimiz/adblue_iptali/feed                              /hizmetlerimiz/adblue_iptali/  301
+/hizmetlerimiz/dpf_iptali/feed/                                /hizmetlerimiz/dpf_iptali/  301
+/hizmetlerimiz/dpf_iptali/feed                                 /hizmetlerimiz/dpf_iptali/  301
+/hizmetlerimiz/egr_iptali/feed/                                /hizmetlerimiz/egr_iptali/  301
+/hizmetlerimiz/egr_iptali/feed                                 /hizmetlerimiz/egr_iptali/  301
+/hizmetlerimiz/chip-tuning/feed/                               /hizmetlerimiz/chip-tuning/  301
+/hizmetlerimiz/chip-tuning/feed                                /hizmetlerimiz/chip-tuning/  301
+/hizmetlerimiz/dpf-temizligi/feed/                             /hizmetlerimiz/dpf-temizligi/  301
+/hizmetlerimiz/dpf-temizligi/feed                              /hizmetlerimiz/dpf-temizligi/  301
+/hizmetlerimiz/egr-temizligi/feed/                             /hizmetlerimiz/egr-temizligi/  301
+/hizmetlerimiz/egr-temizligi/feed                              /hizmetlerimiz/egr-temizligi/  301
+/service/manifold-temizligi/feed/                              /service/manifold-temizligi/  301
+/service/manifold-temizligi/feed                               /service/manifold-temizligi/  301
+/service/cat-adblue-ve-dpf-partikul-iptali/feed/               /service/cat-adblue-ve-dpf-partikul-iptali/  301
+/service/cat-adblue-ve-dpf-partikul-iptali/feed                /service/cat-adblue-ve-dpf-partikul-iptali/  301
+/service/kubota-kx080-4a-adblue-partikul/feed/                 /service/kubota-kx080-4a-adblue-partikul/  301
+/service/kubota-kx080-4a-adblue-partikul/feed                  /service/kubota-kx080-4a-adblue-partikul/  301
+/service/sany-sy135c-adblue-ve-dpf-partikul-iptali/feed/       /service/sany-sy135c-adblue-ve-dpf-partikul-iptali/  301
+/service/sany-sy135c-adblue-ve-dpf-partikul-iptali/feed        /service/sany-sy135c-adblue-ve-dpf-partikul-iptali/  301
+/service/volvo-l220h-adblue-ve-dpf-partikul-iptali/feed/       /service/volvo-l220h-adblue-ve-dpf-partikul-iptali/  301
+/service/volvo-l220h-adblue-ve-dpf-partikul-iptali/feed        /service/volvo-l220h-adblue-ve-dpf-partikul-iptali/  301
+/dizel-partikul-filtresi-tikanirsa-ne-olur/feed/               /dizel-partikul-filtresi-tikanirsa-ne-olur/  301
+/dizel-partikul-filtresi-tikanirsa-ne-olur/feed                /dizel-partikul-filtresi-tikanirsa-ne-olur/  301
+/egr-iptali-yorumlari/feed/                                    /egr-iptali-yorumlari/  301
+/egr-iptali-yorumlari/feed                                     /egr-iptali-yorumlari/  301
+/adblue-arizasi-neden-olur/feed/                               /adblue-arizasi-neden-olur/  301
+/adblue-arizasi-neden-olur/feed                                /adblue-arizasi-neden-olur/  301
+/partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/feed/ /partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/  301
+/partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/feed /partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/  301
+/egr-iptali-yakiti-etkiler-mi/feed/                            /egr-iptali-yakiti-etkiler-mi/  301
+/egr-iptali-yakiti-etkiler-mi/feed                             /egr-iptali-yakiti-etkiler-mi/  301
+/egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/feed/ /egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/  301
+/egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/feed /egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/  301
+/adblue-sistemi-iptal-edilirse-ne-olur/feed/                   /adblue-sistemi-iptal-edilirse-ne-olur/  301
+/adblue-sistemi-iptal-edilirse-ne-olur/feed                    /adblue-sistemi-iptal-edilirse-ne-olur/  301
+/dizel-partikul-filtresi-nedir/feed/                           /dizel-partikul-filtresi-nedir/  301
+/dizel-partikul-filtresi-nedir/feed                            /dizel-partikul-filtresi-nedir/  301
+/adblue-iptali-yorumlari/feed/                                 /adblue-iptali-yorumlari/  301
+/adblue-iptali-yorumlari/feed                                  /adblue-iptali-yorumlari/  301
+/adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/feed/    /adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/  301
+/adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/feed     /adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/  301
+/yuksek-devirde-katalizor-temizligi/feed/                      /yuksek-devirde-katalizor-temizligi/  301
+/yuksek-devirde-katalizor-temizligi/feed                       /yuksek-devirde-katalizor-temizligi/  301
+/katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/feed/   /katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/  301
+/katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/feed    /katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/  301
+/adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/feed/ /adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/  301
+/adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/feed /adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/  301
+/partikul-filtresi-temizlenmezse-ne-olur/feed/                 /partikul-filtresi-temizlenmezse-ne-olur/  301
+/partikul-filtresi-temizlenmezse-ne-olur/feed                  /partikul-filtresi-temizlenmezse-ne-olur/  301
+/egr-temizleyici-sivi/feed/                                    /egr-temizleyici-sivi/  301
+/egr-temizleyici-sivi/feed                                     /egr-temizleyici-sivi/  301
+/egr-sokmeden-nasil-temizlenir/feed/                           /egr-sokmeden-nasil-temizlenir/  301
+/egr-sokmeden-nasil-temizlenir/feed                            /egr-sokmeden-nasil-temizlenir/  301
+/uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/feed/         /uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/  301
+/uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/feed          /uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/  301
+/egr-valfi-arizasi-nasil-anlasilir/feed/                       /egr-valfi-arizasi-nasil-anlasilir/  301
+/egr-valfi-arizasi-nasil-anlasilir/feed                        /egr-valfi-arizasi-nasil-anlasilir/  301
+/category/blog/feed/                                           /blog/  301
+/category/blog/feed                                            /blog/  301
+/category/tuning/feed/                                         /blog/  301
+/category/tuning/feed                                          /blog/  301
+/tag/mechanic/feed/                                            /blog/  301
+/tag/mechanic/feed                                             /blog/  301
+/tag/servicing/feed/                                           /blog/  301
+/tag/servicing/feed                                            /blog/  301
+/service-category/ecu/feed/                                    /hizmetler/  301
+/service-category/ecu/feed                                     /hizmetler/  301
+/service-category/is-makineleri/feed/                          /is-makineleri/  301
+/service-category/is-makineleri/feed                           /is-makineleri/  301
+/service/feed/                                                 /hizmetler/  301
+/service/feed                                                  /hizmetler/  301
+
+# --- Sonda "/" olmayan istekler → "/"'lu kanonik adres (Pages varsayılanı 308; burada tek tip 301) ---
+/hakkimizda                                                    /hakkimizda/  301
+/iletisim                                                      /iletisim/  301
+/hizmetler                                                     /hizmetler/  301
+/is-makineleri                                                 /is-makineleri/  301
+/blog                                                          /blog/  301
+/hizmetlerimiz/adblue_iptali                                   /hizmetlerimiz/adblue_iptali/  301
+/hizmetlerimiz/dpf_iptali                                      /hizmetlerimiz/dpf_iptali/  301
+/hizmetlerimiz/chip-tuning                                     /hizmetlerimiz/chip-tuning/  301
+/hizmetlerimiz/dpf-temizligi                                   /hizmetlerimiz/dpf-temizligi/  301
+/hizmetlerimiz/egr-temizligi                                   /hizmetlerimiz/egr-temizligi/  301
+/service/manifold-temizligi                                    /service/manifold-temizligi/  301
+/service/cat-adblue-ve-dpf-partikul-iptali                     /service/cat-adblue-ve-dpf-partikul-iptali/  301
+/service/kubota-kx080-4a-adblue-partikul                       /service/kubota-kx080-4a-adblue-partikul/  301
+/service/sany-sy135c-adblue-ve-dpf-partikul-iptali             /service/sany-sy135c-adblue-ve-dpf-partikul-iptali/  301
+/service/volvo-l220h-adblue-ve-dpf-partikul-iptali             /service/volvo-l220h-adblue-ve-dpf-partikul-iptali/  301
+/dizel-partikul-filtresi-tikanirsa-ne-olur                     /dizel-partikul-filtresi-tikanirsa-ne-olur/  301
+/egr-iptali-yorumlari                                          /egr-iptali-yorumlari/  301
+/adblue-arizasi-neden-olur                                     /adblue-arizasi-neden-olur/  301
+/partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler /partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/  301
+/egr-iptali-yakiti-etkiler-mi                                  /egr-iptali-yakiti-etkiler-mi/  301
+/egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri    /egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/  301
+/adblue-sistemi-iptal-edilirse-ne-olur                         /adblue-sistemi-iptal-edilirse-ne-olur/  301
+/dizel-partikul-filtresi-nedir                                 /dizel-partikul-filtresi-nedir/  301
+/adblue-iptali-yorumlari                                       /adblue-iptali-yorumlari/  301
+/adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir          /adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/  301
+/yuksek-devirde-katalizor-temizligi                            /yuksek-devirde-katalizor-temizligi/  301
+/katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri         /katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/  301
+/adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler      /adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/  301
+/partikul-filtresi-temizlenmezse-ne-olur                       /partikul-filtresi-temizlenmezse-ne-olur/  301
+/egr-temizleyici-sivi                                          /egr-temizleyici-sivi/  301
+/egr-sokmeden-nasil-temizlenir                                 /egr-sokmeden-nasil-temizlenir/  301
+/uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi               /uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/  301
+/egr-valfi-arizasi-nasil-anlasilir                             /egr-valfi-arizasi-nasil-anlasilir/  301
+/category/blog                                                 /category/blog/  301
+/category/tuning                                               /category/tuning/  301
+/tag/mechanic                                                  /tag/mechanic/  301
+/tag/servicing                                                 /tag/servicing/  301
+/service-category/ecu                                          /service-category/ecu/  301
+/service-category/is-makineleri                                /service-category/is-makineleri/  301
+/service                                                       /service/  301
+/gizlilik-politikasi                                           /gizlilik-politikasi/  301
+/hizmetlerimiz/nox-sensoru                                     /hizmetlerimiz/nox-sensoru/  301
+/hizmetlerimiz/ariza-tespiti                                   /hizmetlerimiz/ariza-tespiti/  301
+/kvkk-aydinlatma-metni                                         /kvkk-aydinlatma-metni/  301
+/cerez-politikasi                                              /cerez-politikasi/  301
+/sss                                                           /sss/  301
+/dpf-temizligi-mi-degisimi-mi                                  /dpf-temizligi-mi-degisimi-mi/  301
+/hizmetlerimiz/adblue-scr-ariza-tespiti                        /hizmetlerimiz/adblue-scr-ariza-tespiti/  301
+
+# --- UYGULANMADI: query tabanlı WP kısa linkleri (Cloudflare _redirects query eşleştiremez) ---
+# Bugün bu istekler ana sayfayı 200 + canonical=/ ile görür. Gerekirse zone düzeyi Single Redirect kuralları: DEPLOY.md §4.3
+#   /?p=121              /
+#   /?p=122              /hakkimizda/
+#   /?p=123              /blog/
+#   /?p=124              /iletisim/
+#   /?p=125              /hizmetler/
+#   /?p=9040             /is-makineleri/
+#   /?p=950              /hizmetlerimiz/adblue_iptali/
+#   /?p=948              /hizmetlerimiz/dpf_iptali/
+#   /?p=946              /hizmetlerimiz/egr_iptali/
+#   /?p=8737             /hizmetlerimiz/chip-tuning/
+#   /?p=8727             /hizmetlerimiz/dpf-temizligi/
+#   /?p=8729             /hizmetlerimiz/egr-temizligi/
+#   /?p=13007            /service/cat-adblue-ve-dpf-partikul-iptali/
+#   /?p=9075             /service/kubota-kx080-4a-adblue-partikul/
+#   /?p=12721            /service/manifold-temizligi/
+#   /?p=9050             /service/sany-sy135c-adblue-ve-dpf-partikul-iptali/
+#   /?p=9085             /service/volvo-l220h-adblue-ve-dpf-partikul-iptali/
+#   /?p=9036             /egr-valfi-arizasi-nasil-anlasilir/
+#   /?p=9032             /uzun-yolda-egr-temizleme-gercekten-ise-yarar-mi/
+#   /?p=9028             /egr-sokmeden-nasil-temizlenir/
+#   /?p=9020             /partikul-filtresi-temizlenmezse-ne-olur/
+#   /?p=9016             /egr-temizleyici-sivi/
+#   /?p=9010             /adblue-iptal-edilir-mi-yasal-durumu-etkileri-ve-cozumler/
+#   /?p=9005             /katalizor-doluysa-ne-olur-sorunlar-ve-cozum-onerileri/
+#   /?p=8996             /yuksek-devirde-katalizor-temizligi/
+#   /?p=8992             /adblue-iptali-yorumlari/
+#   /?p=8987             /egr-iptali-yorumlari/
+#   /?p=8982             /adblue-arizasi-neden-olur/
+#   /?p=8978             /partikul-filtresi-iptali-zararlari-var-mi-gercekler-ve-yanlis-bilinenler/
+#   /?p=8972             /egr-iptali-yakiti-etkiler-mi/
+#   /?p=8963             /egr-neden-tikanir-belirtileri-nedenleri-ve-cozum-onerileri/
+#   /?p=8946             /dizel-partikul-filtresi-tikanirsa-ne-olur/
+#   /?p=804              /adblue-nedir-ne-ise-yarar-hangi-araclarda-kullanilir/
+#   /?p=340              /adblue-sistemi-iptal-edilirse-ne-olur/
+#   /?p=307              /dizel-partikul-filtresi-nedir/
