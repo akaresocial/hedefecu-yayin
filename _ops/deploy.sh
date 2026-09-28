@@ -33,7 +33,13 @@ status() { printf '{"time":"%s","state":"%s","sha":"%s","note":"%s"}\n' "$(ts)" 
 # Tek örnek (üst üste binen cron çalışmalarını engelle)
 exec 9> "$OPS/.lock"
 if command -v flock >/dev/null 2>&1; then
-  flock -n 9 || exit 0
+  if ! flock -n 9; then
+    # başka bir çalışma sürüyor; 20 dakikayı geçtiyse günlüğe yaz (cron komutu zaten `timeout` ile sarılıdır)
+    if [ -f "$OPS/.running" ] && [ -n "$(find "$OPS/.running" -mmin +20 2>/dev/null)" ]; then log "uyarı: önceki çalışma 20 dakikadır sürüyor ($(cat "$OPS/.running" 2>/dev/null))"; fi
+    exit 0
+  fi
+  echo "pid=$$ başlangıç=$(ts)" > "$OPS/.running"
+  trap 'rm -f "$OPS/.running"' EXIT
 else
   if ! mkdir "$OPS/.lockdir" 2>/dev/null; then
     # 15 dakikadan eski ölü kilidi temizle
@@ -81,7 +87,7 @@ fi
 # ---------------------------------------------------------------- uzak sürüm
 remote_sha="${TEST_SHA:-}"
 if [ -z "$remote_sha" ] && command -v git >/dev/null 2>&1; then
-  remote_sha=$(git ls-remote "https://github.com/$REPO.git" "refs/heads/$BRANCH" 2>/dev/null | cut -f1)
+  remote_sha=$(GIT_TERMINAL_PROMPT=0 timeout 30 git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=20 ls-remote "https://github.com/$REPO.git" "refs/heads/$BRANCH" 2>/dev/null | cut -f1)
 fi
 if [ -z "$remote_sha" ]; then
   remote_sha=$(curl -fsS --max-time 20 "https://api.github.com/repos/$REPO/commits/$BRANCH" -H 'Accept: application/vnd.github.sha' 2>/dev/null | tr -dc '0-9a-f' | head -c 40)
@@ -102,7 +108,7 @@ if [ ! -d "$rel/public" ] && [ -n "${TEST_RELEASE_DIR:-}" ]; then
 fi
 if [ ! -d "$rel/public" ]; then
   rm -rf "$rel.tmp" && mkdir -p "$rel.tmp"
-  if ! curl -fsSL --max-time 180 "https://codeload.github.com/$REPO/tar.gz/$remote_sha" | tar -xz -C "$rel.tmp" --strip-components=1; then
+  if ! curl -fsSL --connect-timeout 20 --max-time 180 "https://codeload.github.com/$REPO/tar.gz/$remote_sha" | tar -xz -C "$rel.tmp" --strip-components=1; then
     log "indirme: HATA"; rm -rf "$rel.tmp"; exit 0
   fi
   mv "$rel.tmp" "$rel"
